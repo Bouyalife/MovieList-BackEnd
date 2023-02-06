@@ -4,13 +4,19 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.example.MList.Model.MovieList;
+import com.example.MList.Model.Movies;
 import com.example.MList.Model.User;
+import com.example.MList.Repository.MovieListRepository;
+import com.example.MList.Repository.MoviesRepository;
 import com.example.MList.Repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -22,6 +28,11 @@ public class UserService {
 
     @Autowired
     UserRepository repository;
+    @Autowired
+    MovieListRepository mListRepository;
+    @Autowired
+    MoviesRepository mRepository;
+
 
     // Hämta en specifik användare baserat på användarnamn
     public boolean getUserService(String username){
@@ -29,7 +40,8 @@ public class UserService {
             LoggerFactory.getLogger(getClass()).info(repository.findByUsername(username).getPassword());
             return true;
         }
-        catch(Exception e){
+        catch(Exception e)
+        {
             e.printStackTrace();
             return false;
         }
@@ -42,22 +54,6 @@ public class UserService {
         user.setUsername(username);
         repository.save(user);
         return true;
-    }
-
-    // Lägg till en filmtitel till en lista tillhörande id
-    public boolean addMovieToListService(String movieTitle, int id){
-
-        try{
-            User user = new User();
-            user.setId(id);
-            user.getList().add(movieTitle);
-            repository.save(user);
-            return true;
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public String getCatFact(){
@@ -79,16 +75,38 @@ public class UserService {
 
                 StringBuilder response = new StringBuilder();
                 String responseLine = null;
-                while((responseLine = br.readLine()) != null){
+                while((responseLine = br.readLine()) != null)
+                {
                     response.append(responseLine);
                 }
 
                 return response.toString().substring(9,response.toString().indexOf("\",\"length\":"));
             }
         }
-        catch(Exception e){
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
         return "CATFACT couldn't be called";
+    }
+
+    public boolean login(User user){
+        try{
+            System.out.println("SERVICE: " + user.getUsername() + " ----------- " + user.getPassword());
+            System.out.println(repository.findById(1).get().getUsername());
+            System.out.println(repository.findByUsername(user.getUsername()));
+            if(repository.findByUsername(user.getUsername()).getPassword().equals(user.getPassword())){
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

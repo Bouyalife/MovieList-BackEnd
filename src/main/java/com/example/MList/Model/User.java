@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,8 +21,8 @@ public class User {
     private String username;
     private String password;
 
-    @ElementCollection
-    private List<String> movieList = new ArrayList<String>();
+    @OneToMany(mappedBy="userId")
+    private List<MovieList> movieList = new ArrayList<MovieList>();
 
     public User(int id, String username, String password){
         this.id = id;
@@ -57,11 +58,11 @@ public class User {
         return this.password;
     }
 
-    public List<String> getList(){
+    public List<MovieList> getList(){
         return this.movieList;
     }
     
-    public void setList(List<String> movieList){
+    public void setList(List<MovieList> movieList){
         this.movieList = movieList;
     }
 
