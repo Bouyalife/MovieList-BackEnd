@@ -20,18 +20,27 @@ public class User {
     private int id;
     private String username;
     private String password;
+    private String salt;
 
     @OneToMany(mappedBy="userId")
     private List<MovieList> movieList = new ArrayList<MovieList>();
 
-    public User(int id, String username, String password){
+    public User(int id, String username, String password, String salt){
         this.id = id;
         this.username = username;
         this.password = password;
+        this.salt = salt;
     }
 
     public User(){
 
+    }
+
+    public void setSalt(String salt){
+        this.salt = salt;
+    }
+    public String getSalt(){
+        return this.salt;
     }
 
     public void setId(int id){

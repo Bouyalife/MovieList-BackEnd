@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,11 +53,31 @@ public class UserService {
 
     // Lägg till en användare med specifikt användarnamn och lösenord. Användarnamn är unikt
     public boolean addUserService(String username, String password){
-        User user = new User();
-        user.setPassword(password);
-        user.setUsername(username);
-        repository.save(user);
-        return true;
+        try
+        {
+            // Salt
+            SecureRandom random = new SecureRandom();
+            byte[] salt = new byte[64];
+            random.nextBytes(salt);
+            // Hash
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt);
+            byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            // Skriver ut hash
+            System.out.println("h: "  + new String(hashedPassword));
+
+            User user = new User();
+            user.setPassword(new String(hashedPassword));
+            user.setUsername(username);
+            user.setSalt(new String(salt));
+            repository.save(user);
+            return true;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }        
     }
 
     public String getCatFact(){
@@ -95,8 +119,20 @@ public class UserService {
             System.out.println("SERVICE: " + user.getUsername() + " ----------- " + user.getPassword());
             System.out.println(repository.findById(1).get().getUsername());
             System.out.println(repository.findByUsername(user.getUsername()));
-            // jag vill bara testa
-            if(repository.findByUsername(user.getUsername()).getPassword().equals(user.getPassword())){
+            // Validate password
+            // Hämta salt och hämta hashed lösenord
+            User foundUser = repository.findByUsername(user.getUsername());
+            String salt = foundUser.getSalt();
+            String password = foundUser.getPassword();
+            
+            // jämför hash -> user.password + salt == foundUser.password
+            
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt.getBytes());
+            String loginPassword = new String(md.digest(user.getPassword().getBytes(StandardCharsets.UTF_8)));
+            System.out.println(loginPassword);
+            System.out.println(password);
+            if(loginPassword.equals(password)){
                 return true;
             }
             else
