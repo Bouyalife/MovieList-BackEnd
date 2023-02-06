@@ -48,6 +48,8 @@ public class UserController {
 
     @PostMapping("/adduser")
     public void addUser(@RequestParam String username, @RequestParam String password){
+        System.out.println(username + " 1tdfsgsdfg :" + password);
+
         service.addUserService(username,password);
     }
 

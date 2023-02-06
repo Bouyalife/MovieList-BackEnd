@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,18 +54,17 @@ public class UserService {
 
     // Lägg till en användare med specifikt användarnamn och lösenord. Användarnamn är unikt
     public boolean addUserService(String username, String password){
+        System.out.println(username + " tdfsgsdfg :" + password);
         try
         {
             // Salt
             SecureRandom random = new SecureRandom();
-            byte[] salt = new byte[64];
+            byte[] salt = new byte[16];
             random.nextBytes(salt);
             // Hash
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             md.update(salt);
-            byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
-            // Skriver ut hash
-            System.out.println("h: "  + new String(hashedPassword));
+            byte[] hashedPassword = md.digest(password.getBytes("UTF-8"));
 
             User user = new User();
             user.setPassword(new String(hashedPassword));
