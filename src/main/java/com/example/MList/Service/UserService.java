@@ -95,6 +95,7 @@ public class UserService {
             System.out.println("SERVICE: " + user.getUsername() + " ----------- " + user.getPassword());
             System.out.println(repository.findById(1).get().getUsername());
             System.out.println(repository.findByUsername(user.getUsername()));
+            // jag vill bara testa
             if(repository.findByUsername(user.getUsername()).getPassword().equals(user.getPassword())){
                 return true;
             }
